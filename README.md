@@ -201,6 +201,119 @@ Binder_RMSD           -> RMSD of binder predicted alone compared to original tra
  <li>Sometimes the trajectories can end up being deformed or 'squashed'. This is normal for AF2 multimer design, as it is very sensitive to the sequence input, this cannot be avoided without model retraining. However these trajectories are quickly detected and discarded. </li>
 </ul>
 
+## NEMO HPC Setup (Francis Crick Institute)
+
+This section covers installing and running BindCraft on the NEMO HPC cluster at the Francis Crick Institute. It was set up and is maintained by **Yew Mun Yip** (Chemical Biology STP).
+
+### Prerequisites
+
+- A NEMO HPC account with access to the `gh100` partition
+- Membership of the `dlg_fileshare_data_chemicalbiology_working_read` AD group (contact IT to request access)
+- [pixi](https://pixi.sh) installed in your home directory
+
+Install pixi if you don't have it:
+```bash
+curl -fsSL https://pixi.sh/install.sh | bash
+```
+
+### Shared installation
+
+BindCraft is already installed and maintained at:
+
+```
+/nemo/stp/chemicalbiology/home/shared/software/BindCraft/
+```
+
+You do not need to clone the repository or install anything yourself. The AlphaFold2 model weights, pixi environment, and SLURM scripts are all pre-configured.
+
+### Running BindCraft via the TUI
+
+The recommended way to submit jobs is via the interactive TUI (Terminal User Interface). Request the `bindcraft` launcher script from your administrator, copy it to your home directory, and run:
+
+```bash
+chmod +x bindcraft
+./bindcraft
+```
+
+The wizard will guide you through:
+1. Naming your design run
+2. Selecting an output directory
+3. Selecting your target PDB file
+4. Specifying chain IDs and hotspot residues
+5. Setting binder length range and number of designs
+6. Choosing quality filters
+7. Choosing design algorithm settings
+8. Reviewing and submitting the SLURM job
+
+**Key bindings in the file/folder browsers:**
+
+| Key | Action |
+|---|---|
+| `↑` `↓` | Move cursor |
+| `→` | Open folder |
+| `Ctrl+S` | Select current folder (output dir) or confirm file selection |
+| `←` / `Backspace` | Go up one level / back to previous step |
+| `Ctrl+C` | Cancel |
+
+### Running BindCraft manually
+
+If you prefer to submit jobs directly without the TUI:
+
+```bash
+sbatch /nemo/stp/chemicalbiology/home/shared/software/BindCraft/bindcraft_gh100.slurm \
+  --settings /path/to/your/settings.json \
+  --filters /nemo/stp/chemicalbiology/home/shared/software/BindCraft/settings_filters/default_filters.json \
+  --advanced /nemo/stp/chemicalbiology/home/shared/software/BindCraft/settings_advanced/default_4stage_multimer_hpc.json
+```
+
+### Creating your target settings file
+
+Copy the example and edit it:
+
+```bash
+cp /nemo/stp/chemicalbiology/home/shared/software/BindCraft/settings_target/PDL1.json \
+   ~/my_project/MyTarget.json
+```
+
+Edit the following fields:
+
+```json
+{
+    "design_path":             "/path/to/your/output/",
+    "binder_name":             "MyTarget",
+    "starting_pdb":            "/path/to/your/target.pdb",
+    "chains":                  "A",
+    "target_hotspot_residues": "56",
+    "lengths":                 [65, 100],
+    "number_of_final_designs": 10
+}
+```
+
+### Monitoring your job
+
+```bash
+squeue -u $USER                    # check job status
+tail -f bindcraft_<jobid>.log      # follow the log
+scancel <jobid>                    # cancel a job
+```
+
+### Documentation
+
+Full documentation for settings, filters, and best practices is in the `docs/` folder. Build the HTML version with:
+
+```bash
+cd /nemo/stp/chemicalbiology/home/shared/software/BindCraft/docs
+make html
+```
+
+Then open `docs/_build/html/index.html` in a browser, or copy the `_build/html/` directory to a web-accessible location.
+
+### Getting access
+
+Contact **Yew Mun Yip** or ask IT to add your account to `dlg_fileshare_data_chemicalbiology_working_read` to gain access to the shared installation.
+
+---
+
 ## Credits
 Thanks to Lennart Nickel, Yehlin Cho, Casper Goverde, and Sergey Ovchinnikov for help with coding and discussing ideas. This repository uses code from:
 <ul>
