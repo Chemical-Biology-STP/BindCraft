@@ -1,0 +1,32 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Compiled TUI binary — regenerate with: pixi run python -m nuitka ...
+dist/
+
+# BindCraft output designs
+designs/
+
+# AlphaFold model weights — download separately, do not commit
+params/
+
+# Job logs
+*.log
+
+# Pixi environment — installed locally, not committed
+.pixi/
+
+# Private config — environment pins and HPC-specific scripts
+pixi.toml
+pixi.lock
+bindcraft_gh100.slurm
+bindcraft_tui.py
+
+# Temporary test scripts
+test_*.py
+
+# Private target settings (contain HPC paths)
+settings_target/PDL1_hpc.json

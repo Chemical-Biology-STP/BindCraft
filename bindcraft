@@ -1,0 +1,32 @@
+#!/bin/bash
+# BindCraft TUI launcher
+#
+# Copy this script to your home directory (or anywhere on your PATH) and run:
+#   chmod +x bindcraft
+#   ./bindcraft
+#
+# The TUI script will be found automatically via BINDCRAFT_DIR.
+
+BINDCRAFT_DIR=/nemo/stp/chemicalbiology/home/shared/software/BindCraft
+BINDCRAFT_BIN="$BINDCRAFT_DIR/dist/bindcraft_tui.dist/bindcraft_tui.bin"
+
+# Pass the user's current working directory to the TUI
+export BINDCRAFT_RUN_DIR="$PWD"
+
+# Disable XON/XOFF flow control so Ctrl+S works as a key binding
+stty -ixon 2>/dev/null || true
+
+# Sanity checks
+if [ ! -d "$BINDCRAFT_DIR" ]; then
+    echo "Error: BindCraft installation not found at $BINDCRAFT_DIR"
+    echo "Contact your administrator."
+    exit 1
+fi
+
+if [ ! -f "$BINDCRAFT_BIN" ]; then
+    echo "Error: BindCraft TUI binary not found at $BINDCRAFT_BIN"
+    echo "Contact your administrator."
+    exit 1
+fi
+
+exec "$BINDCRAFT_BIN" "$@"
